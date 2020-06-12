@@ -1,0 +1,47 @@
+service: Test-API
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  description: Test API # optional, Description to publish to AWS
+  region: us-east-1
+  stage: UAT  
+
+functions:
+  GetCart:
+    handler: handler.hello
+    events:
+      - http:
+          path: /test
+          method: get
+          authorizer: aws_iam
+          integration: http
+          cors: false
+          request:
+            uri: 'http://karthibalu.simplesite.com'
+            passThrough: NEVER
+            template:
+              application/json: '{}'
+            parameters:
+              headers:
+                X-Ep-User-Roles: false
+                X-Ep-User-Scopes: false
+                X-Ep-User-Traits: false
+                X-Requested-With: false
+                X-Request-Id: false
+                X-Ep-User-Id: false
+          response:
+            statusCodes:
+              200:
+                pattern: '' 
+                headers:
+                  Strict-Transport-Security: "'max-age=31536000'"
+                  Access-Control-Expose-Headers: "'cLocation'"
+                  Access-Control-Allow-Origin: "'Original Url'"
+                  cLocation: integration.response.header.Location
+              500:
+                pattern: '500' 
+                headers:
+                  Strict-Transport-Security: "'max-age=31536000'"
+                  Access-Control-Allow-Origin: "'Original Url'"
+  

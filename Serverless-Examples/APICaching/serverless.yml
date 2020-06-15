@@ -1,0 +1,63 @@
+
+
+service: apicaching
+
+plugins:
+  - serverless-api-gateway-caching
+provider:
+  name: aws
+  runtime: python2.7
+
+custom:
+  # Enable or disable caching globally
+  apiGatewayCaching:
+    enabled: true
+    clusterSize: '0.5' # defaults to '0.5'
+    ttlInSeconds: 300 # defaults to the maximum allowed: 3600
+    dataEncrypted: true # defaults to false
+
+functions:
+  # Responses are cached
+  list-all-cats:
+    handler: rest_api/cats/get/handler.handle
+    events:
+      - http:
+          path: /cats
+          method: get
+          caching:
+            enabled: true
+
+  # Responses are *not* cached
+  update-cat:
+    handler: rest_api/cat/post/handler.handle
+    events:
+      - http:
+          path: /cat
+          method: post
+
+  # Responses are cached based on the 'pawId' path parameter and the 'Accept-Language' header
+  get-cat-by-paw-id:
+    handler: rest_api/cat/get/handler.handle
+    events:
+      - http:
+          path: /cats/{pawId}
+          method: get
+          caching:
+            enabled: true
+            cacheKeyParameters:
+              - name: request.path.pawId
+              - name: request.header.Accept-Language
+
+  # Responses are cached based on the 'breed' query string parameter and the 'Accept-Language' header
+  get-cats-by-breed:
+    handler: rest_api/cat/get/handler.handle
+    events:
+      - http:
+          path: /cats
+          method: get
+          caching:
+            enabled: true
+            cacheKeyParameters:
+              - name: request.querystring.breed
+              - name: request.header.Accept-Language
+

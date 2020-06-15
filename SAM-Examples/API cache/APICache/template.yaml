@@ -1,0 +1,73 @@
+
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Content Related APIs
+
+Resources:
+  ContentAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: Content API
+      StageName: DEV
+      CacheClusterEnabled: true
+      CacheClusterSize: "0.5"
+      MethodSettings:
+        - CacheTtlInSeconds: 3000
+          CachingEnabled: true
+          HttpMethod: "*"
+          ResourcePath: "/*"
+
+  GetContent1:
+    Type: "AWS::Serverless::Function"
+    Properties:
+      Handler: hello-wprld/app.lambdaHandler
+      Runtime: nodejs12.x
+      CodeUri: .
+      Description: ""
+      MemorySize: 128
+      AutoPublishAlias: live
+      Timeout: 15
+      Policies:
+        - AmazonSSMReadOnlyAccess
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: "/v1/content/{className}/{id}"
+            Method: GET
+            RequestParameters:
+              - method.request.path.id:
+                  Required: true
+                  Caching: true
+              - method.request.path.className:
+                  Required: true
+                  Caching: true
+            RestApiId:
+              Ref: ContentAPI
+  GetContentScalableTarget1:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MaxCapacity: 100
+      MinCapacity: 1
+      ResourceId: !Sub function:${GetContent1}:live
+      RoleARN: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/lambda.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_LambdaConcurrency
+      ScalableDimension: lambda:function:ProvisionedConcurrency
+      ServiceNamespace: lambda
+    DependsOn: GetContent1Aliaslive
+  GetContentScalingPolicy1:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: utilization
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref GetContentScalableTarget1
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 0.70
+        PredefinedMetricSpecification:
+          PredefinedMetricType: LambdaProvisionedConcurrencyUtilization
+
+  
+  ContentCacheS3Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: "{{resolve:ssm:CONTENT_CACHE_S3_BUCKET:1}}"

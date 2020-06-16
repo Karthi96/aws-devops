@@ -1,0 +1,11 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "dgg"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-nczw3190oli7"
+s3_prefix = "dgg"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+

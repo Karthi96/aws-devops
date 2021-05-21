@@ -30,8 +30,8 @@ jobs:
         run: |
           branch=${GITHUB_REF##*/} 
           echo "BRANCH=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
-          echo "::set-output name=AWS_ACCESS_KEY_ID::AWS_ACCESS_KEY_ID_${BRANCH}"
-          echo "::set-output name=AWS_SECRET_ACCESS_KEY::AWS_SECRET_ACCESS_KEY_${BRANCH}"
+          echo "::set-output name=AWS_ACCESS_KEY_ID::AWS_ACCESS_KEY_ID_$BRANCH"
+          echo "::set-output name=AWS_SECRET_ACCESS_KEY::AWS_SECRET_ACCESS_KEY_$BRANCH"
       - uses: actions/checkout@v2
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -41,7 +41,7 @@ jobs:
           aws-region: us-west-2
       - name: Deploy code pipeline common
         run: |
-          aws cloudformation deploy --template-file ./cloud.yaml   --stack-name "test-git-karthi-${BRANCH}" --tags name=${TEAM}
+          aws cloudformation deploy --template-file ./cloud.yaml   --stack-name "test-git-karthi-$BRANCH" --tags name=${TEAM}
       # - name: Deploy code pipeline common
       #   run: |
       #     aws cloudformation deploy --template-file ./cloud.yaml   --stack-name "test-git-karthi"

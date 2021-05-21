@@ -21,9 +21,12 @@ jobs:
     needs: test
     env:
       AWS_REGION: us-west-2
-      BRANCH: ${{env.GITHUB_REF}}
     steps:
     - uses: actions/checkout@v2
+    - name: Set Environment Variables
+      run: |
+        stage=$(git rev-parse --abbrev-ref HEAD)
+        echo "BRANCH=${stage}" >> $GITHUB_ENV
     - name: Deploy Master
       run: echo $BRANCH
       if: $BRANCH == 'master'
@@ -37,3 +40,4 @@ jobs:
         # aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         # aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: $AWS_REGION
+    

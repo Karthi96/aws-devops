@@ -37,6 +37,8 @@ jobs:
               echo "CONFIG=staging" >> "$GITHUB_ENV"
           elif [[ $BRANCH == 'dev1']] then
               echo "CONFIG=dev1" >> "$GITHUB_ENV"
+          else
+              echo "CONFIG=default" >> "$GITHUB_ENV"
           fi
       - name: Branch COnfig
         run: echo 'The branch config is' $CONFIG

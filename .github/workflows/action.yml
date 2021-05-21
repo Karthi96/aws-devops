@@ -39,7 +39,7 @@ jobs:
               echo "CONFIG=dev1" >> "$GITHUB_ENV"
           else
               echo "CONFIG=default" >> "$GITHUB_ENV"
-          fisssss
+          fi
       - name: Branch COnfig
         run: echo 'The branch config is' $CONFIG
 

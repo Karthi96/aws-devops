@@ -5,7 +5,7 @@ Parameters:
   AppEnvironment:
     Type: "String"
     Description: "App Environment"
-    Default: Karthi
+    Default: karthi
 
 Resources:
  

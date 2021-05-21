@@ -31,14 +31,17 @@ jobs:
         run: echo "BRANCH=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
       - name: Set env NEED
         run: |
-          if [ $BRANCH == 'prod'] then
-              echo "CONFIG=prod" >> "$GITHUB_ENV"
-          elif [ $BRANCH == 'staging'] then
-              echo "CONFIG=staging" >> "$GITHUB_ENV"
-          elif [ $BRANCH == 'dev1'] then
-              echo "CONFIG=dev1" >> "$GITHUB_ENV"
+          if [ $a == $b ]
+          then
+            echo "a is equal to b"
+          elif [ $a -gt $b ]
+          then
+            echo "a is greater than b"
+          elif [ $a -lt $b ]
+          then
+            echo "a is less than b"
           else
-              echo "CONFIG=default" >> "$GITHUB_ENV"
+            echo "None of the condition met"
           fi
       - name: Branch COnfig
         run: echo 'The branch config is' $CONFIG
@@ -47,7 +50,15 @@ jobs:
 
 
 
-
+ # if [ $BRANCH == 'prod'] then
+          #     echo "CONFIG=prod" >> "$GITHUB_ENV"
+          # elif [ $BRANCH == 'staging'] then
+          #     echo "CONFIG=staging" >> "$GITHUB_ENV"
+          # elif [ $BRANCH == 'dev1'] then
+          #     echo "CONFIG=dev1" >> "$GITHUB_ENV"
+          # else
+          #     echo "CONFIG=default" >> "$GITHUB_ENV"
+          # fi
 
 
 

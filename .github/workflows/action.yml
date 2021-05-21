@@ -31,11 +31,11 @@ jobs:
         run: echo "BRANCH=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
       - name: Set env NEED
         run: |
-          if [[ $BRANCH == 'prod']]; then
+          if [[ $BRANCH == 'prod']] then
               echo "CONFIG=prod" >> "$GITHUB_ENV"
-          elif [[ $BRANCH == 'staging']]; then
+          elif [[ $BRANCH == 'staging']] then
               echo "CONFIG=staging" >> "$GITHUB_ENV"
-          elif [[ $BRANCH == 'dev1']]; then
+          elif [[ $BRANCH == 'dev1']] then
               echo "CONFIG=dev1" >> "$GITHUB_ENV"
           fi
       - name: Branch COnfig

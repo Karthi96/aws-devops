@@ -21,20 +21,23 @@ jobs:
     needs: test
     env:
       AWS_REGION: us-west-2
-      BRANCH: ${GITHUB_REF##*/}
     steps:
     - uses: actions/checkout@v2
+    - uses: nelonoel/branch-name@v1
+   
     - name: Deploy Master
-      run: echo ${{env.BRANCH}}
-      if: ${{env.BRANCH}} == 'master'
+      run: echo  ${BRANCH_NAME}
+      if:  ${BRANCH_NAME} == 'master'
     - name: Deploy Dev
-      run: echo ${{env.BRANCH}}
-      if: ${{env.BRANCH}} == 'dev'
-    - name: Configure AWS credentials
-      id: creds
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        # aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        # aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{env.AWS_REGION}}
+      run: echo  ${BRANCH_NAME}
+      if:  ${BRANCH_NAME} == 'dev'
+    - name: Get branch name
+      run: echo 'The branch name is' $BRANCH_NAME
+    # - name: Configure AWS credentials
+    #   id: creds
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     # aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     # aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: ${{env.AWS_REGION}}
     

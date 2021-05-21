@@ -31,13 +31,13 @@ jobs:
         run: echo "BRANCH=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
       - name: Set env NEED
         run: |
-          if [ $a == $b ]
+          if [ $BRANCH == 'prod' ]
           then
             echo "a is equal to b"
-          elif [ $a -gt $b ]
+          elif [ $BRANCH == 'staging' ]
           then
             echo "a is greater than b"
-          elif [ $a -lt $b ]
+          elif [ $BRANCH == 'master' ]
           then
             echo "a is less than b"
           else

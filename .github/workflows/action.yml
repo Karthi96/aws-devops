@@ -24,7 +24,7 @@ jobs:
     if: github.event_name == 'push' 
     env:
       TEAM: AppTeam
-       BRANCH=${{GITHUB_REF##*/}} 
+      BRANCH: ${{GITHUB_REF##*/}} 
     steps:
       - name: Create variables
         id: vars 

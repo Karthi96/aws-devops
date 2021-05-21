@@ -2,6 +2,7 @@ name: Deploy CloudFormation Stacks
 
 # Controls when the action will run.
 on:
+
   push:
     branches:
       - 'dev'
@@ -13,6 +14,7 @@ on:
 jobs:
   Test:
     runs-on: ubuntu-latest
+    if: github.event.name == 'push' || github.event.name == 'pull-request' 
     steps:
       - name: Execute tests
         run: exit 0
@@ -23,6 +25,8 @@ jobs:
       AWS_REGION: us-west-2
     if: github.event.name == 'push' 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Set env BRANCH
         run: echo "BRANCH=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
       - name: Set env NEED

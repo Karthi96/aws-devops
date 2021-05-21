@@ -24,6 +24,7 @@ jobs:
     if: github.event_name == 'push' 
     env:
       TEAM: AppTeam
+       BRANCH=${{GITHUB_REF##*/}} 
     steps:
       - name: Create variables
         id: vars 
@@ -40,7 +41,7 @@ jobs:
           aws-region: us-west-2
       - name: Deploy code pipeline common
         run: |
-          aws cloudformation deploy --template-file ./cloud.yaml   --stack-name test-git-karthi-${branch} --tags name=${TEAM}
+          aws cloudformation deploy --template-file ./cloud.yaml   --stack-name test-git-karthi-${BRANCH}} --tags name=${TEAM}
       # - name: Deploy code pipeline common
       #   run: |
       #     aws cloudformation deploy --template-file ./cloud.yaml   --stack-name "test-git-karthi"

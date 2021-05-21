@@ -31,14 +31,17 @@ jobs:
         run: echo "BRANCH=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
       - name: Set env NEED
         run: |
-          if [[ $BRANCH == 'master' && $GITHUB_EVENT_NAME == 'push' ]]; then
-              echo "NEED=true" >> "$GITHUB_ENV"
+          if [[ $BRANCH == 'prod']]; then
+              echo "CONFIG=prod" >> "$GITHUB_ENV"
+          elif [[ $BRANCH == 'staging']] then
+              echo "CONFIG=staging" >> "$GITHUB_ENV"
+          elif [[ $BRANCH == 'dev1']] then
+              echo "CONFIG=dev1" >> "$GITHUB_ENV"
           else
-              echo "NEED=false" >> "$GITHUB_ENV"
+              echo "CONFIG=default" >> "$GITHUB_ENV"
           fi
-      - name: Skip Deploy?
-        if: env.NEED != 'true'
-        run: echo "Only pushing to 'master' causes automatic deployment"
+      - name: Branch COnfig
+        run: echo 'The branch config is' $CONFIG
 
 
 

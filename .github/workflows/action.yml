@@ -27,10 +27,10 @@ jobs:
    
     - name: Deploy Master
       run: echo  ${BRANCH_NAME}
-      if:  ${BRANCH_NAME} == 'master'
+      if:  $BRANCH_NAME == 'master'
     - name: Deploy Dev
       run: echo  ${BRANCH_NAME}
-      if:  ${BRANCH_NAME} == 'dev'
+      if:  $BRANCH_NAME == 'dev'
     - name: Get branch name
       run: echo 'The branch name is' $BRANCH_NAME
     # - name: Configure AWS credentials

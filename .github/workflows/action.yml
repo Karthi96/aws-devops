@@ -24,12 +24,12 @@ jobs:
     if: github.event_name == 'push' 
     env:
       TEAM: AppTeam
-      BRANCH: ${{github.ref##*/}}
     steps:
       - name: Create variables
         id: vars 
         run: |
           branch=${GITHUB_REF##*/} 
+          echo "BRANCH=$(echo ${GITHUB_REF##*/} )" >> $GITHUB_ENV
           echo "::set-output name=AWS_ACCESS_KEY_ID::AWS_ACCESS_KEY_ID_${branch}"
           echo "::set-output name=AWS_SECRET_ACCESS_KEY::AWS_SECRET_ACCESS_KEY_${branch}"
       - uses: actions/checkout@v2

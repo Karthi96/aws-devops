@@ -30,17 +30,15 @@ jobs:
           echo "::set-output name=AWS_ACCESS_KEY_ID::AWS_ACCESS_KEY_ID_${branch^^}"
           echo "::set-output name=AWS_SECRET_ACCESS_KEY::AWS_SECRET_ACCESS_KEY_${branch^^}"
       - uses: actions/checkout@v2
-      - name: Set env BRANCH
-        run: echo "BRANCH=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets[steps.vars.outputs.AWS_ACCESS_KEY_ID] }} 
           aws-secret-access-key: ${{ secrets[steps.vars.outputs.AWS_SECRET_ACCESS_KEY] }} 
           aws-region: us-west-2
-      - name: Copy files to the test website with the AWS CLI
+      - name: CLoudformation creation
         run: |
-          aws s3 ls
+          aws cloudformation deploy --template-file ./cloud.yaml   --stack-name "test-git-karthi"
         
 
 

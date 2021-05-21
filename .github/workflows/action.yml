@@ -22,17 +22,22 @@ jobs:
     env:
       AWS_REGION: us-west-2
     steps:
-    - uses: actions/checkout@v2
-    - uses: nelonoel/branch-name@v1
+      - name: Git checkout
+        uses: actions/checkout@v1
+      - name: Branch name
+        run: echo running on branch ${GITHUB_REF##*/}
+    # steps:
+    # - uses: actions/checkout@v2
+    # - uses: nelonoel/branch-name@v1
    
-    - name: Deploy Master
-      run: echo  ${BRANCH_NAME}
-      if:  $BRANCH_NAME == 'master'
-    - name: Deploy Dev
-      run: echo  ${BRANCH_NAME}
-      if:  $BRANCH_NAME == 'dev'
-    - name: Get branch name
-      run: echo 'The branch name is' $BRANCH_NAME
+    # - name: Deploy Master
+    #   run: echo  ${BRANCH_NAME}
+    #   if:  $BRANCH_NAME == 'master'
+    # - name: Deploy Dev
+    #   run: echo  ${BRANCH_NAME}
+    #   if:  $BRANCH_NAME == 'dev'
+    # - name: Get branch name
+    #   run: echo 'The branch name is' $BRANCH_NAME
     # - name: Configure AWS credentials
     #   id: creds
     #   uses: aws-actions/configure-aws-credentials@v1

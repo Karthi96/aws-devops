@@ -1,0 +1,26 @@
+name: my workflow
+on:
+  push:
+    branches:
+      - 'dev'
+      - 'master'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute tests
+        run: exit 0
+  Deployment:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF##*/})"
+      id: extract_branch
+    - name: Deploy Master
+      run: echo "master"
+      if: steps.extract_branch.outputs.branch == 'master'
+    - name: Deploy Dev
+      run: echo "dev"
+      if: steps.extract_branch.outputs.branch == 'dev'

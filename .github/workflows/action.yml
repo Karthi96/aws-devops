@@ -21,14 +21,15 @@ jobs:
     needs: test
     env:
       AWS_REGION: us-west-2
+      BRANCH: ${{env.GITHUB_REF}}
     steps:
     - uses: actions/checkout@v2
     - name: Deploy Master
-      run: echo $GITHUB_REF
-      if: $GITHUB_REF == 'master'
+      run: echo $BRANCH
+      if: $BRANCH == 'master'
     - name: Deploy Dev
-      run: echo $GITHUB_REF
-      if: $GITHUB_REF == 'dev'
+      run: echo $BRANCH
+      if: $BRANCH == 'dev'
     - name: Configure AWS credentials
       id: creds
       uses: aws-actions/configure-aws-credentials@v1

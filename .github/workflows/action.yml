@@ -21,7 +21,7 @@ jobs:
     needs: test
     env:
       AWS_REGION: us-west-2
-      BRACH: ${GITHUB_REF##*/}
+      BRANCH: ${GITHUB_REF##*/}
     steps:
     - uses: actions/checkout@v2
     - name: Deploy Master

@@ -1,51 +1,56 @@
-# This is the SAM template that represents the architecture of your serverless application
-# https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-template-basics.html
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Content Related APIs
 
-# The AWSTemplateFormatVersion identifies the capabilities of the template
-# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/format-version-structure.html
-AWSTemplateFormatVersion: 2010-09-09
-Description: >-
-  Testing
-
-# Transform section specifies one or more macros that AWS CloudFormation uses to process your template
-# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
-Transform:
-- AWS::Serverless-2016-10-31
-
-# Resources declares the AWS resources that you want to include in the stack
-# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
-  # This is an SQS queue with all default configuration properties. To learn more about the available options, see
-  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-queues.html
-  MyTestQueue:
-    Type: AWS::SQS::Queue
-    Properties: 
-      ContentBasedDeduplication: False
-      DelaySeconds: 30
-      FifoQueue: True
-      QueueName: recipe.fifo
-      Tags: 
-        - Key: "Type"
-          Value: "NavigationRecipeCache"
-      VisibilityTimeout: 25
-  
-  # This is the Lambda function definition associated with the source code: sqs-payload-logger.js. For all available properties, see
-  # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-  SQSPayloadLogger:
-    Type: AWS::Serverless::Function
+  IotApiHttpGateway:
+    Type: AWS::Serverless::Api
     Properties:
-      Description: A Lambda function that logs the payload of messages sent to an associated SQS queue.
-      Runtime: nodejs12.x
+      Name: Content API
+      StageName: api
+      MethodSettings:
+        - HttpMethod: "*"
+          ResourcePath: "/*"
+
+  RefreshNavigationContent1:
+    Type: "AWS::Serverless::Function"
+    Properties:
       Handler: src/handlers/sqs-payload-logger.sqsPayloadLoggerHandler
-      # This property associates this Lambda function with the SQS queue defined above, so that whenever the queue
-      # receives a message, the Lambda function is invoked
-      Events:
-        SQSQueueEvent:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt MyTestQueue.Arn
+      Runtime: nodejs12.x
+      CodeUri: .
+      Description: ""
       MemorySize: 128
-      Timeout: 25 # Chosen to be less than the default SQS Visibility Timeout of 30 seconds
+      AutoPublishAlias: live
+      Timeout: 29
+      DeploymentPreference:
+        Type: AllAtOnce
+      ProvisionedConcurrencyConfig:
+        ProvisionedConcurrentExecutions: 1
       Policies:
-        # Give Lambda basic execution Permission to the helloFromLambda
-        - AWSLambdaBasicExecutionRole
+        - AmazonSSMReadOnlyAccess
+        - AmazonS3FullAccess
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: "/v1/navigation-content/refresh"
+            Method: POST
+            RestApiId:
+              Ref: IotApiHttpGateway
+        ScheduledEvent:
+          Type: Schedule
+          Properties:
+            Schedule: rate(5 minutes)
+            Description: Task to periodically call content-api "api/v1/navigation-content/refresh".
+            Enabled: True
+      VpcConfig:
+        SecurityGroupIds:
+          - "{{resolve:ssm:ELASTICSEARCH_SUBNET_GROUP_ID:3}}"
+        SubnetIds:
+          - "{{resolve:ssm:ELASTICSEARCH_SUBNET_ID1:4}}"
+ 
+  ContentCacheS3Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: "{{resolve:ssm:CONTENT_CACHE_S3_BUCKET:8}}"

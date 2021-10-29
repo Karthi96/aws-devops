@@ -1,18 +1,30 @@
 service: Test-API
 
+plugins:
+  - serverless-plugin-stage-variables
+custom:
+  stageVariables:
+    foo: bar
+
 provider:
   name: aws
   runtime: nodejs10.x
   description: Test API # optional, Description to publish to AWS
   region: us-east-1
-  stage: UAT  
+  stage: UAT
+  tags:
+    foo: ZZZ
+  stackTags:
+    bar: AAA
+  environment:
+    MY_SECRET: hey
 
 functions:
   GetCart:
     handler: handler.hello
     events:
       - http:
-          path: /test
+          path: /test1
           method: get
           authorizer: aws_iam
           integration: http

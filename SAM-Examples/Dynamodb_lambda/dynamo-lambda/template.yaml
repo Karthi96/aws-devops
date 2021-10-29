@@ -1,0 +1,95 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  dynamo-lambda
+
+  Sample SAM Template for dynamo-lambda
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 10
+
+
+Resources:
+
+  RegistrationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: src/register/handler/user_handlers.create_user_handler
+      Runtime: python3.8
+      Events:
+        Registration:
+          Type: Api
+          Properties:
+            Path: /register
+            Method: post
+      Policies:
+        - AdministratorAccess
+        - DynamoDBCrudPolicy:
+            TableName: !Ref RegistrationTable
+
+  LoginFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: src/register/handler/user_handlers.user_login_handler
+      Runtime: python3.8
+      Events:
+        Registration:
+          Type: Api
+          Properties:
+            Path: /login
+            Method: post
+      Policies:
+        - AdministratorAccess
+        - DynamoDBCrudPolicy:
+            TableName: !Ref RegistrationTable
+
+  WriteDataFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: src/register/handler/user_handlers.write_data_handler
+      Runtime: python3.8
+      Events:
+        Registration:
+          Type: Api
+          Properties:
+            Path: /update
+            Method: post
+      Policies:
+        - AdministratorAccess
+        - DynamoDBCrudPolicy:
+            TableName: !Ref RegistrationTable
+              
+  RegistrationTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        -
+          AttributeName: "user_email"
+          AttributeType: "S"
+      KeySchema:
+        -
+          AttributeName: "user_email"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "1"
+        WriteCapacityUnits: "1"
+      TableName: "registration"
+
+  DataTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: "user_id"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "user_id"
+          KeyType: "HASH"
+      ProvisionedThroughput:
+        ReadCapacityUnits: "1"
+        WriteCapacityUnits: "1"
+      TableName: "user_data"

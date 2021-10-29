@@ -1,0 +1,61 @@
+service: multistage-api-deployment
+
+provider:
+  name: aws
+  runtime: python2.7
+  stage: Dev1
+  region: us-east-1
+
+# you can add CloudFormation resource templates here
+resources:
+  Resources:
+    ApiGatewayRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: Multi-stage
+        path: users/create
+        method: get
+        authorizer: aws_iam
+        integration: http
+        
+
+    ApiGatewayDeploymentDev:
+      Type: AWS::ApiGateway::Deployment
+      Properties:
+        RestApiId: !Ref ApiGatewayRestApi
+        Description: My deployment
+        StageName: DummyStage
+
+    ApiGatewayStageDev:
+        Type: 'AWS::ApiGateway::Stage'
+        Properties:
+          StageName: prod
+          Description: Production Stage
+          RestApiId: 
+            Ref: ApiGatewayRestApi
+          DeploymentId: 
+            Ref: ApiGatewayDeploymentDev
+          Variables:
+            "Stage": "prod"
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          path: users/create
+          method: get
+          authorizer: aws_iam
+          integration: http
+          cors: false
+          request:
+            uri: 'http://karthibalu.simplesite.com'
+          RestApiId:
+              Ref: ApiGatewayRestApi
+    
+
+   
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"
